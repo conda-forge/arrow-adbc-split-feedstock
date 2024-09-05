@@ -8,6 +8,8 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
   sha256: 695eb7bfb4fe7b42079d67391cb0045a39fac97c4288cd2712fad972c6a9e668
+  patches:
+    - patches/0001-build-c-don-t-install-adbc.h-unless-driver-manager-i.patch
 
 build:
   number: 0
@@ -33,8 +35,9 @@ outputs:
       commands:
         - test -f $PREFIX/include/arrow-adbc/adbc.h                              # [unix]
         - test -f $PREFIX/include/arrow-adbc/adbc_driver_manager.h               # [unix]
-        - test ! -f $PREFIX/include/adbc.h                                       # [unix]
-        - test ! -f $PREFIX/include/adbc_driver_manager.h                        # [unix]
+        # For now, we still ship these headers for backwards compatibility
+        - test -f $PREFIX/include/adbc.h                                         # [unix]
+        - test -f $PREFIX/include/adbc_driver_manager.h                          # [unix]
         - test -d $PREFIX/lib/cmake/AdbcDriverManager/                           # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-manager.pc                   # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_manager.a                         # [unix]
@@ -44,8 +47,8 @@ outputs:
         - if not exist %LIBRARY_BIN%\adbc_driver_manager.dll exit 1              # [win]
         - if not exist %LIBRARY_INC%\arrow-adbc\adbc.h exit 1                    # [win]
         - if not exist %LIBRARY_INC%\arrow-adbc\adbc_driver_manager.h exit 1     # [win]
-        - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
-        - if exist %LIBRARY_INC%\adbc_driver_manager.h exit 1                    # [win]
+        - if not exist %LIBRARY_INC%\adbc.h exit 1                               # [win]
+        - if not exist %LIBRARY_INC%\adbc_driver_manager.h exit 1                # [win]
         - if not exist %LIBRARY_LIB%\adbc_driver_manager.lib exit 1              # [win]
         - if not exist %LIBRARY_LIB%\cmake\AdbcDriverManager exit 1              # [win]
         - if not exist %LIBRARY_LIB%\pkgconfig\adbc-driver-manager.pc exit 1     # [win]
