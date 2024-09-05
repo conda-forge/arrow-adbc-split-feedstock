@@ -6,6 +6,10 @@ case "${PKG_NAME}" in
     libadbc-driver-manager)
         export CMAKE_FLAGS="-DADBC_DRIVER_MANAGER=ON"
         ;;
+    libadbc-driver-bigquery)
+        export CGO_ENABLED=1
+        export CMAKE_FLAGS="-DADBC_DRIVER_BIGQUERY=ON"
+        ;;
     libadbc-driver-flightsql)
         export CGO_ENABLED=1
         export CMAKE_FLAGS="-DADBC_DRIVER_FLIGHTSQL=ON"

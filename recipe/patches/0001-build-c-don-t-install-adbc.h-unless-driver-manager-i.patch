@@ -1,0 +1,42 @@
+From 23a4072dc7dd1a037942c95a1fa7e55a489d8ed2 Mon Sep 17 00:00:00 2001
+From: David Li <li.davidm96@gmail.com>
+Date: Thu, 5 Sep 2024 01:10:10 -0400
+Subject: [PATCH] build(c): don't install adbc.h unless driver manager is
+ enabled
+
+Fixes #2126.
+---
+ c/CMakeLists.txt                | 4 ----
+ c/driver_manager/CMakeLists.txt | 4 ++++
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/c/CMakeLists.txt b/c/CMakeLists.txt
+index f090aafd3..be69103d0 100644
+--- a/c/CMakeLists.txt
++++ b/c/CMakeLists.txt
+@@ -35,10 +35,6 @@ add_subdirectory(vendor/nanoarrow)
+ add_subdirectory(driver/common)
+ add_subdirectory(driver/framework)
+ 
+-install(FILES "${REPOSITORY_ROOT}/c/include/adbc.h" DESTINATION include)
+-install(FILES "${REPOSITORY_ROOT}/c/include/arrow-adbc/adbc.h"
+-        DESTINATION include/arrow-adbc)
+-
+ if(ADBC_BUILD_TESTS)
+   add_subdirectory(validation)
+ endif()
+diff --git a/c/driver_manager/CMakeLists.txt b/c/driver_manager/CMakeLists.txt
+index f08b41ecc..0eb17f0c8 100644
+--- a/c/driver_manager/CMakeLists.txt
++++ b/c/driver_manager/CMakeLists.txt
+@@ -35,6 +35,10 @@ include_directories(SYSTEM ${REPOSITORY_ROOT}/c/include/)
+ include_directories(SYSTEM ${REPOSITORY_ROOT}/c/vendor)
+ include_directories(SYSTEM ${REPOSITORY_ROOT}/c/driver)
+ 
++install(FILES "${REPOSITORY_ROOT}/c/include/adbc.h" DESTINATION include)
++install(FILES "${REPOSITORY_ROOT}/c/include/arrow-adbc/adbc.h"
++        DESTINATION include/arrow-adbc)
++
+ foreach(LIB_TARGET ${ADBC_LIBRARIES})
+   target_compile_definitions(${LIB_TARGET} PRIVATE ADBC_EXPORTING)
+ endforeach()
