@@ -31,8 +31,10 @@ outputs:
         - {{ pin_subpackage("libadbc-driver-manager", max_pin="x.x") }}
     test:
       commands:
-        - test -f $PREFIX/include/adbc.h                                         # [unix]
-        - test -f $PREFIX/include/adbc_driver_manager.h                          # [unix]
+        - test -f $PREFIX/include/arrow-adbc/adbc.h                              # [unix]
+        - test -f $PREFIX/include/arrow-adbc/adbc_driver_manager.h               # [unix]
+        - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/adbc_driver_manager.h                        # [unix]
         - test -d $PREFIX/lib/cmake/AdbcDriverManager/                           # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-manager.pc                   # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_manager.a                         # [unix]
@@ -40,8 +42,10 @@ outputs:
         - test -f $PREFIX/lib/libadbc_driver_manager.102.dylib                   # [osx]
 
         - if not exist %LIBRARY_BIN%\adbc_driver_manager.dll exit 1              # [win]
-        - if not exist %LIBRARY_INC%\adbc.h exit 1                               # [win]
-        - if not exist %LIBRARY_INC%\adbc_driver_manager.h exit 1                # [win]
+        - if not exist %LIBRARY_INC%\arrow-adbc\adbc.h exit 1                    # [win]
+        - if not exist %LIBRARY_INC%\arrow-adbc\adbc_driver_manager.h exit 1     # [win]
+        - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
+        - if exist %LIBRARY_INC%\adbc_driver_manager.h exit 1                    # [win]
         - if not exist %LIBRARY_LIB%\adbc_driver_manager.lib exit 1              # [win]
         - if not exist %LIBRARY_LIB%\cmake\AdbcDriverManager exit 1              # [win]
         - if not exist %LIBRARY_LIB%\pkgconfig\adbc-driver-manager.pc exit 1     # [win]
@@ -69,6 +73,7 @@ outputs:
     test:
       commands:
         - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-bigquery.pc                  # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_bigquery.a                        # [unix]
         - test -f $PREFIX/lib/libadbc_driver_bigquery.so.102                     # [linux]
@@ -104,6 +109,7 @@ outputs:
     test:
       commands:
         - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-flightsql.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_flightsql.a                       # [unix]
         - test -f $PREFIX/lib/libadbc_driver_flightsql.so.102                    # [linux]
@@ -139,6 +145,7 @@ outputs:
     test:
       commands:
         - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -d $PREFIX/lib/cmake/AdbcDriverPostgreSQL/                        # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-postgresql.pc                # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_postgresql.a                      # [unix]
@@ -176,6 +183,7 @@ outputs:
     test:
       commands:
         - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -d $PREFIX/lib/cmake/AdbcDriverSQLite/                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-sqlite.pc                    # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_sqlite.a                          # [unix]
@@ -213,6 +221,7 @@ outputs:
     test:
       commands:
         - test ! -f $PREFIX/include/adbc.h                                       # [unix]
+        - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-snowflake.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_snowflake.a                       # [unix]
         - test -f $PREFIX/lib/libadbc_driver_snowflake.so.102                    # [linux]
@@ -253,9 +262,11 @@ outputs:
         - {{ SP_DIR }}/adbc_driver_manager
     test:
       commands:
-        - test ! -f $SP_DIR/adbc_driver_manager/adbc.h                           # [unix]
-        - test ! -f $SP_DIR/adbc_driver_manager/adbc_driver_manager.h            # [unix]
-        - test ! -f $SP_DIR/adbc_driver_manager/adbc_driver_manager.cc           # [unix]
+        - test ! -f $SP_DIR/adbc_driver_manager/adbc.h                            # [unix]
+        - test ! -f $SP_DIR/adbc_driver_manager/adbc_driver_manager.h             # [unix]
+        - test ! -f $SP_DIR/adbc_driver_manager/arrow-adbc/adbc.h                 # [unix]
+        - test ! -f $SP_DIR/adbc_driver_manager/arrow-adbc/adbc_driver_manager.h  # [unix]
+        - test ! -f $SP_DIR/adbc_driver_manager/adbc_driver_manager.cc            # [unix]
       imports:
         - adbc_driver_manager
         - adbc_driver_manager._lib
