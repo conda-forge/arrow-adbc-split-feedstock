@@ -60,9 +60,6 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
-        # Pin Go due to regression (https://github.com/golang/go/issues/68587)
-        - go 1.22.4
-        - go-cgo 1.22.4
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -98,7 +95,6 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
-        - go-cgo <1.22.5
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -210,7 +206,6 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
-        - go-cgo <1.22.5
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
