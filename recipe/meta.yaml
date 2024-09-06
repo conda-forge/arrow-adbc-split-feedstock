@@ -12,7 +12,7 @@ source:
     - patches/0001-build-c-don-t-install-adbc.h-unless-driver-manager-i.patch
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - name: libadbc-driver-manager
@@ -233,6 +233,34 @@ outputs:
         - if not exist %LIBRARY_BIN%\adbc_driver_snowflake.dll exit 1            # [win]
         - if not exist %LIBRARY_LIB%\adbc_driver_snowflake.lib exit 1            # [win]
         - if not exist %LIBRARY_LIB%\pkgconfig\adbc-driver-snowflake.pc exit 1   # [win]
+
+  - name: adbc-driver-bigquery
+    build:
+      noarch: python
+      # XXX: punting on non-unix platforms due to general issues
+      skip: true  # [win]
+      skip: true  # [build_platform != target_platform]
+    script: build-python.sh  # [not win]
+    script: build-python.bat  # [win]
+    requirements:
+      build:
+        - pip
+        - setuptools
+      host:
+        - {{ pin_subpackage('libadbc-driver-bigquery', max_pin='x.x.x', min_pin='x.x.x.x') }}
+        - pip
+        - python >=3.9
+        - setuptools
+      run:
+        - {{ pin_subpackage('adbc-driver-manager') }}
+        - {{ pin_subpackage('libadbc-driver-bigquery', max_pin='x.x.x', min_pin='x.x.x.x') }}
+        - importlib_resources
+        - python >=3.9
+      run_constrained:
+        - pyarrow >=8.0.0
+    test:
+      imports:
+        - adbc_driver_bigquery
 
   - name: adbc-driver-manager
     script: build-python.sh  # [not win]
