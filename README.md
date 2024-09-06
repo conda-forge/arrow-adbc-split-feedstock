@@ -164,6 +164,7 @@ Current release info
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-adbc--driver--bigquery-green.svg)](https://anaconda.org/conda-forge/adbc-driver-bigquery) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/adbc-driver-bigquery.svg)](https://anaconda.org/conda-forge/adbc-driver-bigquery) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/adbc-driver-bigquery.svg)](https://anaconda.org/conda-forge/adbc-driver-bigquery) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/adbc-driver-bigquery.svg)](https://anaconda.org/conda-forge/adbc-driver-bigquery) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-adbc--driver--flightsql-green.svg)](https://anaconda.org/conda-forge/adbc-driver-flightsql) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/adbc-driver-flightsql.svg)](https://anaconda.org/conda-forge/adbc-driver-flightsql) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/adbc-driver-flightsql.svg)](https://anaconda.org/conda-forge/adbc-driver-flightsql) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/adbc-driver-flightsql.svg)](https://anaconda.org/conda-forge/adbc-driver-flightsql) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-adbc--driver--manager-green.svg)](https://anaconda.org/conda-forge/adbc-driver-manager) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/adbc-driver-manager.svg)](https://anaconda.org/conda-forge/adbc-driver-manager) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/adbc-driver-manager.svg)](https://anaconda.org/conda-forge/adbc-driver-manager) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/adbc-driver-manager.svg)](https://anaconda.org/conda-forge/adbc-driver-manager) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-adbc--driver--postgresql-green.svg)](https://anaconda.org/conda-forge/adbc-driver-postgresql) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/adbc-driver-postgresql.svg)](https://anaconda.org/conda-forge/adbc-driver-postgresql) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/adbc-driver-postgresql.svg)](https://anaconda.org/conda-forge/adbc-driver-postgresql) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/adbc-driver-postgresql.svg)](https://anaconda.org/conda-forge/adbc-driver-postgresql) |
@@ -186,41 +187,41 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `adbc-driver-flightsql, adbc-driver-manager, adbc-driver-postgresql, adbc-driver-snowflake, adbc-driver-sqlite, libadbc-driver-bigquery, libadbc-driver-flightsql, libadbc-driver-manager, libadbc-driver-postgresql, libadbc-driver-snowflake, libadbc-driver-sqlite` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `adbc-driver-bigquery, adbc-driver-flightsql, adbc-driver-manager, adbc-driver-postgresql, adbc-driver-snowflake, adbc-driver-sqlite, libadbc-driver-bigquery, libadbc-driver-flightsql, libadbc-driver-manager, libadbc-driver-postgresql, libadbc-driver-snowflake, libadbc-driver-sqlite` can be installed with `conda`:
 
 ```
-conda install adbc-driver-flightsql adbc-driver-manager adbc-driver-postgresql adbc-driver-snowflake adbc-driver-sqlite libadbc-driver-bigquery libadbc-driver-flightsql libadbc-driver-manager libadbc-driver-postgresql libadbc-driver-snowflake libadbc-driver-sqlite
-```
-
-or with `mamba`:
-
-```
-mamba install adbc-driver-flightsql adbc-driver-manager adbc-driver-postgresql adbc-driver-snowflake adbc-driver-sqlite libadbc-driver-bigquery libadbc-driver-flightsql libadbc-driver-manager libadbc-driver-postgresql libadbc-driver-snowflake libadbc-driver-sqlite
-```
-
-It is possible to list all of the versions of `adbc-driver-flightsql` available on your platform with `conda`:
-
-```
-conda search adbc-driver-flightsql --channel conda-forge
+conda install adbc-driver-bigquery adbc-driver-flightsql adbc-driver-manager adbc-driver-postgresql adbc-driver-snowflake adbc-driver-sqlite libadbc-driver-bigquery libadbc-driver-flightsql libadbc-driver-manager libadbc-driver-postgresql libadbc-driver-snowflake libadbc-driver-sqlite
 ```
 
 or with `mamba`:
 
 ```
-mamba search adbc-driver-flightsql --channel conda-forge
+mamba install adbc-driver-bigquery adbc-driver-flightsql adbc-driver-manager adbc-driver-postgresql adbc-driver-snowflake adbc-driver-sqlite libadbc-driver-bigquery libadbc-driver-flightsql libadbc-driver-manager libadbc-driver-postgresql libadbc-driver-snowflake libadbc-driver-sqlite
+```
+
+It is possible to list all of the versions of `adbc-driver-bigquery` available on your platform with `conda`:
+
+```
+conda search adbc-driver-bigquery --channel conda-forge
+```
+
+or with `mamba`:
+
+```
+mamba search adbc-driver-bigquery --channel conda-forge
 ```
 
 Alternatively, `mamba repoquery` may provide more information:
 
 ```
 # Search all versions available on your platform:
-mamba repoquery search adbc-driver-flightsql --channel conda-forge
+mamba repoquery search adbc-driver-bigquery --channel conda-forge
 
-# List packages depending on `adbc-driver-flightsql`:
-mamba repoquery whoneeds adbc-driver-flightsql --channel conda-forge
+# List packages depending on `adbc-driver-bigquery`:
+mamba repoquery whoneeds adbc-driver-bigquery --channel conda-forge
 
-# List dependencies of `adbc-driver-flightsql`:
-mamba repoquery depends adbc-driver-flightsql --channel conda-forge
+# List dependencies of `adbc-driver-bigquery`:
+mamba repoquery depends adbc-driver-bigquery --channel conda-forge
 ```
 
 
