@@ -1,5 +1,5 @@
-{% set release = "14" %}
-{% set version = "1.2.0" %}
+{% set release = "15" %}
+{% set version = "1.3.0" %}
 
 package:
   name: arrow-adbc-split
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
-  sha256: 695eb7bfb4fe7b42079d67391cb0045a39fac97c4288cd2712fad972c6a9e668
+  sha256: 56594d21c9a6529129619b8ab8883615eee503347bb7743f68932ecafa1eeb65
   patches:
     - patches/0001-build-c-don-t-install-adbc.h-unless-driver-manager-i.patch
 
 build:
-  number: 3
+  number: 0
 
 outputs:
   - name: libadbc-driver-manager
