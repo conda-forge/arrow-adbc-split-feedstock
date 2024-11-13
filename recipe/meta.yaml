@@ -8,8 +8,6 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
   sha256: 56594d21c9a6529129619b8ab8883615eee503347bb7743f68932ecafa1eeb65
-  patches:
-    - patches/0001-build-c-don-t-install-adbc.h-unless-driver-manager-i.patch
 
 build:
   number: 0
