@@ -30,8 +30,10 @@ cmake ..\..\c ^
       -G Ninja ^
       -DADBC_BUILD_SHARED=ON ^
       -DADBC_BUILD_STATIC=OFF ^
+      -DCMAKE_BUILD_TYPE=Release ^
       -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
       -DCMAKE_PREFIX_PATH=%PREFIX% ^
+      %CMAKE_FLAGS% ^
       || exit /B 1
 
 cmake --build . --target install --config Release -j || exit /B 1
