@@ -1,0 +1,441 @@
+From ed476f48c6ac1419c027ef58297781da059f8be8 Mon Sep 17 00:00:00 2001
+From: David Li <li.davidm96@gmail.com>
+Date: Wed, 13 Nov 2024 23:32:35 -0500
+Subject: [PATCH] chore(c): fix some warnings reported by MSVC
+
+---
+ c/cmake_modules/AdbcDefines.cmake        |  2 +
+ c/driver/framework/base_driver.h         |  6 ++-
+ c/driver/framework/utility.cc            |  1 -
+ c/driver/postgresql/connection.cc        |  3 +-
+ c/driver/postgresql/database.cc          |  8 +--
+ c/driver/postgresql/result_helper.cc     |  6 +--
+ c/driver/postgresql/result_reader.cc     |  4 +-
+ c/driver/postgresql/statement.cc         | 13 ++---
+ c/driver/sqlite/sqlite.cc                |  6 +--
+ c/driver/sqlite/statement_reader.c       | 26 +++++-----
+ go/adbc/drivermgr/adbc_driver_manager.cc | 63 +++++++++++++++++++-----
+ 11 files changed, 92 insertions(+), 46 deletions(-)
+
+diff --git a/c/cmake_modules/AdbcDefines.cmake b/c/cmake_modules/AdbcDefines.cmake
+index 6c83cca54..d27cb8fb3 100644
+--- a/c/cmake_modules/AdbcDefines.cmake
++++ b/c/cmake_modules/AdbcDefines.cmake
+@@ -93,7 +93,9 @@ if(MSVC)
+   # Don't warn about padding added after members
+   add_compile_options(/wd4820)
+   add_compile_options(/wd5027)
++  add_compile_options(/wd5039)
+   add_compile_options(/wd5045)
++  add_compile_options(/wd5246)
+ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+        OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+        OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+diff --git a/c/driver/framework/base_driver.h b/c/driver/framework/base_driver.h
+index eecb506ee..f379121b6 100644
+--- a/c/driver/framework/base_driver.h
++++ b/c/driver/framework/base_driver.h
+@@ -116,8 +116,9 @@ class Option {
+                                              "': trailing data", value);
+             }
+             return parsed;
++          } else {
++            return status::InvalidArgument("Invalid integer value ", this->Format());
+           }
+-          return status::InvalidArgument("Invalid integer value ", this->Format());
+         },
+         value_);
+   }
+@@ -129,8 +130,9 @@ class Option {
+           using T = std::decay_t<decltype(value)>;
+           if constexpr (std::is_same_v<T, std::string>) {
+             return value;
++          } else {
++            return status::InvalidArgument("Invalid string value ", this->Format());
+           }
+-          return status::InvalidArgument("Invalid string value ", this->Format());
+         },
+         value_);
+   }
+diff --git a/c/driver/framework/utility.cc b/c/driver/framework/utility.cc
+index cbcd8bb54..d281776e5 100644
+--- a/c/driver/framework/utility.cc
++++ b/c/driver/framework/utility.cc
+@@ -163,7 +163,6 @@ Status MakeGetInfoStream(const std::vector<InfoValue>& infos, ArrowArrayStream*
+           } else {
+             static_assert(!sizeof(T), "info value type not implemented");
+           }
+-          return status::Ok();
+         },
+         info.value));
+     UNWRAP_ERRNO(Internal, ArrowArrayFinishElement(array.get()));
+diff --git a/c/driver/postgresql/connection.cc b/c/driver/postgresql/connection.cc
+index b5f12ca73..0f46fff0d 100644
+--- a/c/driver/postgresql/connection.cc
++++ b/c/driver/postgresql/connection.cc
+@@ -300,7 +300,8 @@ class PostgresGetObjectsHelper : public adbc::driver::GetObjectsHelper {
+ 
+     Column col;
+     col.column_name = next_column_[0].value();
+-    UNWRAP_RESULT(col.ordinal_position, next_column_[1].ParseInteger());
++    UNWRAP_RESULT(int64_t ordinal_position, next_column_[1].ParseInteger());
++    col.ordinal_position = static_cast<int32_t>(ordinal_position);
+     if (!next_column_[2].is_null) {
+       col.remarks = next_column_[2].value();
+     }
+diff --git a/c/driver/postgresql/database.cc b/c/driver/postgresql/database.cc
+index cdbad7535..1bd744488 100644
+--- a/c/driver/postgresql/database.cc
++++ b/c/driver/postgresql/database.cc
+@@ -294,7 +294,7 @@ static Status InsertPgAttributeResult(
+     UNWRAP_RESULT(int64_t col_oid, item[2].ParseInteger());
+ 
+     if (type_oid != current_type_oid && !columns.empty()) {
+-      resolver->InsertClass(current_type_oid, columns);
++      resolver->InsertClass(static_cast<uint32_t>(current_type_oid), columns);
+       columns.clear();
+       current_type_oid = type_oid;
+     }
+@@ -347,12 +347,12 @@ static Status InsertPgTypeResult(const PqResultHelper& result,
+     type_item.class_oid = static_cast<uint32_t>(typrelid);
+     type_item.base_oid = static_cast<uint32_t>(typbasetype);
+ 
+-    int result = resolver->Insert(type_item, nullptr);
++    int insert_result = resolver->Insert(type_item, nullptr);
+ 
+     // If there's an array type and the insert succeeded, add that now too
+-    if (result == NANOARROW_OK && typarray != 0) {
++    if (insert_result == NANOARROW_OK && typarray != 0) {
+       std::string array_typname = "_" + std::string(typname);
+-      type_item.oid = typarray;
++      type_item.oid = static_cast<uint32_t>(typarray);
+       type_item.typname = array_typname.c_str();
+       type_item.typreceive = "array_recv";
+       type_item.child_oid = static_cast<uint32_t>(oid);
+diff --git a/c/driver/postgresql/result_helper.cc b/c/driver/postgresql/result_helper.cc
+index 6dd7527a0..48c680488 100644
+--- a/c/driver/postgresql/result_helper.cc
++++ b/c/driver/postgresql/result_helper.cc
+@@ -46,7 +46,7 @@ Status PqResultHelper::PrepareInternal(int n_params, const Oid* param_oids) cons
+ Status PqResultHelper::Prepare() const { return PrepareInternal(0, nullptr); }
+ 
+ Status PqResultHelper::Prepare(const std::vector<Oid>& param_oids) const {
+-  return PrepareInternal(param_oids.size(), param_oids.data());
++  return PrepareInternal(static_cast<int>(param_oids.size()), param_oids.data());
+ }
+ 
+ Status PqResultHelper::DescribePrepared() {
+@@ -90,8 +90,8 @@ Status PqResultHelper::Execute(const std::vector<std::string>& params,
+     }
+ 
+     ClearResult();
+-    result_ = PQexecParams(conn_, query_.c_str(), param_values.size(), param_oids_ptr,
+-                           param_values.data(), param_lengths.data(),
++    result_ = PQexecParams(conn_, query_.c_str(), static_cast<int>(param_values.size()),
++                           param_oids_ptr, param_values.data(), param_lengths.data(),
+                            param_formats.data(), static_cast<int>(output_format_));
+   }
+ 
+diff --git a/c/driver/postgresql/result_reader.cc b/c/driver/postgresql/result_reader.cc
+index 464bad74a..61d17bb03 100644
+--- a/c/driver/postgresql/result_reader.cc
++++ b/c/driver/postgresql/result_reader.cc
+@@ -100,8 +100,8 @@ int PqResultArrayReader::GetNext(struct ArrowArray* out) {
+         item.size_bytes = pg_item.len;
+       }
+ 
+-      NANOARROW_RETURN_NOT_OK(
+-          field_readers_[i]->Read(&item, item.size_bytes, tmp->children[i], &na_error_));
++      NANOARROW_RETURN_NOT_OK(field_readers_[i]->Read(
++          &item, static_cast<int32_t>(item.size_bytes), tmp->children[i], &na_error_));
+     }
+   }
+ 
+diff --git a/c/driver/postgresql/statement.cc b/c/driver/postgresql/statement.cc
+index 129ddebff..9518e378e 100644
+--- a/c/driver/postgresql/statement.cc
++++ b/c/driver/postgresql/statement.cc
+@@ -546,22 +546,23 @@ AdbcStatusCode PostgresStatement::ExecuteSchema(struct ArrowSchema* schema,
+   PqResultHelper helper(connection_->conn(), query_);
+ 
+   if (bind_.release) {
+-    nanoarrow::UniqueSchema schema;
++    nanoarrow::UniqueSchema param_schema;
+     struct ArrowError na_error;
+     ArrowErrorInit(&na_error);
+-    CHECK_NA_DETAIL(INTERNAL, ArrowArrayStreamGetSchema(&bind_, schema.get(), &na_error),
++    CHECK_NA_DETAIL(INTERNAL,
++                    ArrowArrayStreamGetSchema(&bind_, param_schema.get(), &na_error),
+                     &na_error, error);
+ 
+-    if (std::string(schema->format) != "+s") {
++    if (std::string(param_schema->format) != "+s") {
+       SetError(error, "%s", "[libpq] Bind parameters must have type STRUCT");
+       return ADBC_STATUS_INVALID_STATE;
+     }
+ 
+-    std::vector<Oid> param_oids(schema->n_children);
+-    for (int64_t i = 0; i < schema->n_children; i++) {
++    std::vector<Oid> param_oids(param_schema->n_children);
++    for (int64_t i = 0; i < param_schema->n_children; i++) {
+       PostgresType pg_type;
+       CHECK_NA_DETAIL(INTERNAL,
+-                      PostgresType::FromSchema(*type_resolver_, schema->children[i],
++                      PostgresType::FromSchema(*type_resolver_, param_schema->children[i],
+                                                &pg_type, &na_error),
+                       &na_error, error);
+       param_oids[i] = pg_type.oid();
+diff --git a/c/driver/sqlite/sqlite.cc b/c/driver/sqlite/sqlite.cc
+index a5186d00b..6348b5ce3 100644
+--- a/c/driver/sqlite/sqlite.cc
++++ b/c/driver/sqlite/sqlite.cc
+@@ -150,7 +150,7 @@ class SqliteQuery {
+     return Close(rc);
+   }
+ 
+-  Status Close(int rc) {
++  Status Close(int last_rc) {
+     if (stmt_) {
+       int rc = sqlite3_finalize(stmt_);
+       stmt_ = nullptr;
+@@ -158,7 +158,7 @@ class SqliteQuery {
+         return status::fmt::Internal("failed to execute: {}\nquery was: {}",
+                                      sqlite3_errmsg(conn_), query_);
+       }
+-    } else if (rc != SQLITE_OK) {
++    } else if (last_rc != SQLITE_OK) {
+       return status::fmt::Internal("failed to execute: {}\nquery was: {}",
+                                    sqlite3_errmsg(conn_), query_);
+     }
+@@ -192,7 +192,7 @@ class SqliteQuery {
+       UNWRAP_RESULT(bool has_row, q.Next());
+       if (!has_row) break;
+ 
+-      int rc = std::forward<RowFunc>(row_func)(q.stmt_);
++      rc = std::forward<RowFunc>(row_func)(q.stmt_);
+       if (rc != SQLITE_OK) break;
+     }
+     return q.Close();
+diff --git a/c/driver/sqlite/statement_reader.c b/c/driver/sqlite/statement_reader.c
+index f73151673..69f90ebd6 100644
+--- a/c/driver/sqlite/statement_reader.c
++++ b/c/driver/sqlite/statement_reader.c
+@@ -334,8 +334,8 @@ AdbcStatusCode AdbcSqliteBinderBindNext(struct AdbcSqliteBinder* binder, sqlite3
+         case NANOARROW_TYPE_BINARY_VIEW: {
+           struct ArrowBufferView value =
+               ArrowArrayViewGetBytesUnsafe(binder->batch.children[col], binder->next_row);
+-          status = sqlite3_bind_blob(stmt, col + 1, value.data.as_char, value.size_bytes,
+-                                     SQLITE_STATIC);
++          status = sqlite3_bind_blob(stmt, col + 1, value.data.as_char,
++                                     (int)value.size_bytes, SQLITE_STATIC);
+           break;
+         }
+         case NANOARROW_TYPE_BOOL:
+@@ -377,8 +377,8 @@ AdbcStatusCode AdbcSqliteBinderBindNext(struct AdbcSqliteBinder* binder, sqlite3
+         case NANOARROW_TYPE_STRING_VIEW: {
+           struct ArrowBufferView value =
+               ArrowArrayViewGetBytesUnsafe(binder->batch.children[col], binder->next_row);
+-          status = sqlite3_bind_text(stmt, col + 1, value.data.as_char, value.size_bytes,
+-                                     SQLITE_STATIC);
++          status = sqlite3_bind_text(stmt, col + 1, value.data.as_char,
++                                     (int)value.size_bytes, SQLITE_STATIC);
+           break;
+         }
+         case NANOARROW_TYPE_DICTIONARY: {
+@@ -391,7 +391,7 @@ AdbcStatusCode AdbcSqliteBinderBindNext(struct AdbcSqliteBinder* binder, sqlite3
+             struct ArrowBufferView value = ArrowArrayViewGetBytesUnsafe(
+                 binder->batch.children[col]->dictionary, value_index);
+             status = sqlite3_bind_text(stmt, col + 1, value.data.as_char,
+-                                       value.size_bytes, SQLITE_STATIC);
++                                       (int)value.size_bytes, SQLITE_STATIC);
+           }
+           break;
+         }
+@@ -411,16 +411,16 @@ AdbcStatusCode AdbcSqliteBinderBindNext(struct AdbcSqliteBinder* binder, sqlite3
+ 
+           RAISE_ADBC(ArrowDate32ToIsoString((int32_t)value, &tsstr, error));
+           // SQLITE_TRANSIENT ensures the value is copied during bind
+-          status =
+-              sqlite3_bind_text(stmt, col + 1, tsstr, strlen(tsstr), SQLITE_TRANSIENT);
++          status = sqlite3_bind_text(stmt, col + 1, tsstr, (int)strlen(tsstr),
++                                     SQLITE_TRANSIENT);
+ 
+           free(tsstr);
+           break;
+         }
+         case NANOARROW_TYPE_TIMESTAMP: {
+           struct ArrowSchemaView bind_schema_view;
+-          RAISE_ADBC(ArrowSchemaViewInit(&bind_schema_view, binder->schema.children[col],
+-                                         &arrow_error));
++          RAISE_NA(ArrowSchemaViewInit(&bind_schema_view, binder->schema.children[col],
++                                       &arrow_error));
+           enum ArrowTimeUnit unit = bind_schema_view.time_unit;
+           int64_t value =
+               ArrowArrayViewGetIntUnsafe(binder->batch.children[col], binder->next_row);
+@@ -429,8 +429,8 @@ AdbcStatusCode AdbcSqliteBinderBindNext(struct AdbcSqliteBinder* binder, sqlite3
+           RAISE_ADBC(ArrowTimestampToIsoString(value, unit, &tsstr, error));
+ 
+           // SQLITE_TRANSIENT ensures the value is copied during bind
+-          status =
+-              sqlite3_bind_text(stmt, col + 1, tsstr, strlen(tsstr), SQLITE_TRANSIENT);
++          status = sqlite3_bind_text(stmt, col + 1, tsstr, (int)strlen(tsstr),
++                                     SQLITE_TRANSIENT);
+           free((char*)tsstr);
+           break;
+         }
+@@ -844,7 +844,7 @@ AdbcStatusCode StatementReaderUpcastInt64ToDouble(struct ArrowBuffer* data,
+   size_t num_elements = data->size_bytes / sizeof(int64_t);
+   const int64_t* elements = (const int64_t*)data->data;
+   for (size_t i = 0; i < num_elements; i++) {
+-    double value = elements[i];
++    double value = (double)elements[i];
+     ArrowBufferAppendUnsafe(&doubles, &value, sizeof(double));
+   }
+   ArrowBufferReset(data);
+@@ -1133,7 +1133,7 @@ AdbcStatusCode AdbcSqliteExportReader(sqlite3* db, sqlite3_stmt* stmt,
+   memset(reader, 0, sizeof(struct StatementReader));
+   reader->db = db;
+   reader->stmt = stmt;
+-  reader->batch_size = batch_size;
++  reader->batch_size = (int)batch_size;
+ 
+   stream->private_data = reader;
+   stream->release = StatementReaderRelease;
+diff --git a/go/adbc/drivermgr/adbc_driver_manager.cc b/go/adbc/drivermgr/adbc_driver_manager.cc
+index 44c3d9f98..0ce173a88 100644
+--- a/go/adbc/drivermgr/adbc_driver_manager.cc
++++ b/go/adbc/drivermgr/adbc_driver_manager.cc
+@@ -84,6 +84,36 @@ void SetError(struct AdbcError* error, const std::string& message) {
+   error->release = ReleaseError;
+ }
+ 
++// Copies src_error into error and releases src_error
++void SetError(struct AdbcError* error, struct AdbcError* src_error) {
++  if (!error) return;
++  if (error->release) error->release(error);
++
++  if (src_error->message) {
++    size_t message_size = strlen(src_error->message);
++    error->message = new char[message_size];
++    std::memcpy(error->message, src_error->message, message_size);
++    error->message[message_size] = '\0';
++  } else {
++    error->message = nullptr;
++  }
++
++  error->release = ReleaseError;
++  if (src_error->release) {
++    src_error->release(src_error);
++  }
++}
++
++struct OwnedError {
++  struct AdbcError error = ADBC_ERROR_INIT;
++
++  ~OwnedError() {
++    if (error.release) {
++      error.release(&error);
++    }
++  }
++};
++
+ // Driver state
+ 
+ /// A driver DLL.
+@@ -666,7 +696,7 @@ std::string AdbcDriverManagerDefaultEntrypoint(const std::string& driver) {
+ 
+ int AdbcErrorGetDetailCount(const struct AdbcError* error) {
+   if (error->vendor_code == ADBC_ERROR_VENDOR_CODE_PRIVATE_DATA && error->private_data &&
+-      error->private_driver) {
++      error->private_driver && error->private_driver->ErrorGetDetailCount) {
+     return error->private_driver->ErrorGetDetailCount(error);
+   }
+   return 0;
+@@ -674,7 +704,7 @@ int AdbcErrorGetDetailCount(const struct AdbcError* error) {
+ 
+ struct AdbcErrorDetail AdbcErrorGetDetail(const struct AdbcError* error, int index) {
+   if (error->vendor_code == ADBC_ERROR_VENDOR_CODE_PRIVATE_DATA && error->private_data &&
+-      error->private_driver) {
++      error->private_driver && error->private_driver->ErrorGetDetail) {
+     return error->private_driver->ErrorGetDetail(error, index);
+   }
+   return {nullptr, nullptr, 0};
+@@ -900,6 +930,7 @@ AdbcStatusCode AdbcDatabaseInit(struct AdbcDatabase* database, struct AdbcError*
+     status = AdbcLoadDriver(args->driver.c_str(), nullptr, ADBC_VERSION_1_1_0,
+                             database->private_driver, error);
+   }
++
+   if (status != ADBC_STATUS_OK) {
+     // Restore private_data so it will be released by AdbcDatabaseRelease
+     database->private_data = args;
+@@ -910,10 +941,18 @@ AdbcStatusCode AdbcDatabaseInit(struct AdbcDatabase* database, struct AdbcError*
+     database->private_driver = nullptr;
+     return status;
+   }
+-  status = database->private_driver->DatabaseNew(database, error);
++
++  // Errors that occur during AdbcDatabaseXXX() refer to the driver via
++  // the private_driver member; however, after we return we have released
++  // the driver and inspecting the error might segfault. Here, we scope
++  // the driver-produced error to this function and make a copy if necessary.
++  OwnedError driver_error;
++
++  status = database->private_driver->DatabaseNew(database, &driver_error.error);
+   if (status != ADBC_STATUS_OK) {
+     if (database->private_driver->release) {
+-      database->private_driver->release(database->private_driver, error);
++      SetError(error, &driver_error.error);
++      database->private_driver->release(database->private_driver, nullptr);
+     }
+     delete database->private_driver;
+     database->private_driver = nullptr;
+@@ -927,33 +966,34 @@ AdbcStatusCode AdbcDatabaseInit(struct AdbcDatabase* database, struct AdbcError*
+ 
+   INIT_ERROR(error, database);
+   for (const auto& option : options) {
+-    status = database->private_driver->DatabaseSetOption(database, option.first.c_str(),
+-                                                         option.second.c_str(), error);
++    status = database->private_driver->DatabaseSetOption(
++        database, option.first.c_str(), option.second.c_str(), &driver_error.error);
+     if (status != ADBC_STATUS_OK) break;
+   }
+   for (const auto& option : bytes_options) {
+     status = database->private_driver->DatabaseSetOptionBytes(
+         database, option.first.c_str(),
+         reinterpret_cast<const uint8_t*>(option.second.data()), option.second.size(),
+-        error);
++        &driver_error.error);
+     if (status != ADBC_STATUS_OK) break;
+   }
+   for (const auto& option : int_options) {
+     status = database->private_driver->DatabaseSetOptionInt(
+-        database, option.first.c_str(), option.second, error);
++        database, option.first.c_str(), option.second, &driver_error.error);
+     if (status != ADBC_STATUS_OK) break;
+   }
+   for (const auto& option : double_options) {
+     status = database->private_driver->DatabaseSetOptionDouble(
+-        database, option.first.c_str(), option.second, error);
++        database, option.first.c_str(), option.second, &driver_error.error);
+     if (status != ADBC_STATUS_OK) break;
+   }
+ 
+   if (status != ADBC_STATUS_OK) {
+     // Release the database
+-    std::ignore = database->private_driver->DatabaseRelease(database, error);
++    std::ignore = database->private_driver->DatabaseRelease(database, nullptr);
+     if (database->private_driver->release) {
+-      database->private_driver->release(database->private_driver, error);
++      SetError(error, &driver_error.error);
++      database->private_driver->release(database->private_driver, nullptr);
+     }
+     delete database->private_driver;
+     database->private_driver = nullptr;
+@@ -962,6 +1002,7 @@ AdbcStatusCode AdbcDatabaseInit(struct AdbcDatabase* database, struct AdbcError*
+     database->private_data = nullptr;
+     return status;
+   }
++
+   return database->private_driver->DatabaseInit(database, error);
+ }
+ 

@@ -8,9 +8,11 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
   sha256: 56594d21c9a6529129619b8ab8883615eee503347bb7743f68932ecafa1eeb65
+  patches:
+    - patches/0001-chore-c-fix-some-warnings-reported-by-MSVC.patch
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - name: libadbc-driver-manager
@@ -25,8 +27,6 @@ outputs:
       host:
       run:
     build:
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       run_exports:
         - {{ pin_subpackage("libadbc-driver-manager", max_pin="x.x") }}
     test:
@@ -137,8 +137,6 @@ outputs:
       run:
         - libpq
     build:
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       run_exports:
         - {{ pin_subpackage("libadbc-driver-postgresql", max_pin="x.x") }}
     test:
@@ -175,8 +173,6 @@ outputs:
       run:
         - libsqlite
     build:
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       run_exports:
         - {{ pin_subpackage("libadbc-driver-sqlite", max_pin="x.x") }}
     test:
@@ -281,8 +277,6 @@ outputs:
       run_constrained:
         - pyarrow >=8.0.0
     build:
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       rpaths:
         - lib/
         - {{ SP_DIR }}/adbc_driver_manager
@@ -328,8 +322,6 @@ outputs:
   - name: adbc-driver-postgresql
     build:
       noarch: python
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       skip: true  # [build_platform != target_platform]
     script: build-python.sh  # [not win]
     script: build-python.bat  # [win]
@@ -356,8 +348,6 @@ outputs:
   - name: adbc-driver-sqlite
     build:
       noarch: python
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       skip: true  # [build_platform != target_platform]
     script: build-python.sh  # [not win]
     script: build-python.bat  # [win]
