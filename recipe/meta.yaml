@@ -241,18 +241,20 @@ outputs:
       host:
         - {{ pin_subpackage('libadbc-driver-bigquery', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - pip
-        - python >=3.9
+        - python {{ python_min }}
         - setuptools
       run:
         - {{ pin_subpackage('adbc-driver-manager') }}
         - {{ pin_subpackage('libadbc-driver-bigquery', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - importlib_resources
-        - python >=3.9
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     test:
       imports:
         - adbc_driver_bigquery
+      requires:
+        - python {{ python_min }}
 
   - name: adbc-driver-manager
     script: build-python.sh  # [not win]
@@ -268,10 +270,10 @@ outputs:
       host:
         - cython
         - pip
-        - python
+        - python {{ python_min }}
         - setuptools
       run:
-        - python
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     build:
@@ -288,6 +290,8 @@ outputs:
       imports:
         - adbc_driver_manager
         - adbc_driver_manager._lib
+      requires:
+        - python {{ python_min }}
 
   - name: adbc-driver-flightsql
     build:
@@ -304,18 +308,20 @@ outputs:
       host:
         - {{ pin_subpackage('libadbc-driver-flightsql', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - pip
-        - python >=3.9
+        - python {{ python_min }}
         - setuptools
       run:
         - {{ pin_subpackage('adbc-driver-manager') }}
         - {{ pin_subpackage('libadbc-driver-flightsql', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - importlib_resources
-        - python >=3.9
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     test:
       imports:
         - adbc_driver_flightsql
+      requires:
+        - python {{ python_min }}
 
   - name: adbc-driver-postgresql
     build:
@@ -330,18 +336,20 @@ outputs:
       host:
         - {{ pin_subpackage('libadbc-driver-postgresql', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - pip
-        - python >=3.9
+        - python {{ python_min }}
         - setuptools
       run:
         - {{ pin_subpackage('adbc-driver-manager') }}
         - {{ pin_subpackage('libadbc-driver-postgresql', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - importlib_resources
-        - python >=3.9
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     test:
       imports:
         - adbc_driver_postgresql
+      requires:
+        - python {{ python_min }}
 
   - name: adbc-driver-sqlite
     build:
@@ -356,18 +364,20 @@ outputs:
       host:
         - {{ pin_subpackage('libadbc-driver-sqlite', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - pip
-        - python >=3.9
+        - python {{ python_min }}
         - setuptools
       run:
         - {{ pin_subpackage('adbc-driver-manager') }}
         - {{ pin_subpackage('libadbc-driver-sqlite', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - importlib_resources
-        - python >=3.9
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     test:
       imports:
         - adbc_driver_sqlite
+      requires:
+        - python {{ python_min }}
 
   - name: adbc-driver-snowflake
     build:
@@ -384,18 +394,20 @@ outputs:
       host:
         - {{ pin_subpackage('libadbc-driver-snowflake', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - pip
-        - python >=3.9
+        - python {{ python_min }}
         - setuptools
       run:
         - {{ pin_subpackage('adbc-driver-manager') }}
         - {{ pin_subpackage('libadbc-driver-snowflake', max_pin='x.x.x', min_pin='x.x.x.x') }}
         - importlib_resources
-        - python >=3.9
+        - python >={{ python_min }}
       run_constrained:
         - pyarrow >=8.0.0
     test:
       imports:
         - adbc_driver_snowflake
+      requires:
+        - python {{ python_min }}
 
 about:
   home: https://arrow.apache.org
