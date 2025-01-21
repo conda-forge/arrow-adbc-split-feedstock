@@ -37,8 +37,8 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverManager/                           # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-manager.pc                   # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_manager.a                         # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_manager.so.103                      # [linux]
-        - test -f $PREFIX/lib/libadbc_driver_manager.103.dylib                   # [osx]
+        - test -f $PREFIX/lib/libadbc_driver_manager.so.104                      # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_manager.104.dylib                   # [osx]
 
         - if not exist %LIBRARY_BIN%\adbc_driver_manager.dll exit 1              # [win]
         - if not exist %LIBRARY_INC%\arrow-adbc\adbc.h exit 1                    # [win]
@@ -74,10 +74,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-bigquery.pc                  # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_bigquery.a                        # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_bigquery.so.103                     # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_bigquery.so.104                     # [linux]
         - test -f $PREFIX/lib/libadbc_driver_bigquery.dylib                      # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_bigquery.103.dylib                # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_bigquery.104.dylib                # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_bigquery.dll exit 1             # [win]
@@ -109,10 +109,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-flightsql.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_flightsql.a                       # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_flightsql.so.103                    # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_flightsql.so.104                    # [linux]
         - test -f $PREFIX/lib/libadbc_driver_flightsql.dylib                     # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_flightsql.103.dylib               # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_flightsql.104.dylib               # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_flightsql.dll exit 1            # [win]
@@ -144,10 +144,10 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverPostgreSQL/                        # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-postgresql.pc                # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_postgresql.a                      # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_postgresql.so.103                   # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_postgresql.so.104                   # [linux]
         - test -f $PREFIX/lib/libadbc_driver_postgresql.dylib                    # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_postgresql.103.dylib              # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_postgresql.104.dylib              # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_postgresql.dll exit 1           # [win]
@@ -180,10 +180,10 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverSQLite/                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-sqlite.pc                    # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_sqlite.a                          # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_sqlite.so.103                       # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_sqlite.so.104                       # [linux]
         - test -f $PREFIX/lib/libadbc_driver_sqlite.dylib                        # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_sqlite.103.dylib                  # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_sqlite.104.dylib                  # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_sqlite.dll exit 1               # [win]
@@ -216,10 +216,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-snowflake.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_snowflake.a                       # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_snowflake.so.103                    # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_snowflake.so.104                    # [linux]
         - test -f $PREFIX/lib/libadbc_driver_snowflake.dylib                     # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_snowflake.103.dylib               # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_snowflake.104.dylib               # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_snowflake.dll exit 1            # [win]
@@ -264,7 +264,7 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - {{ stdlib("c") }}
-        - python                                 # [build_platform != target_platform]
+        - python {{ python_min }}                # [build_platform != target_platform]
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
         - cython                                 # [build_platform != target_platform]
       host:
