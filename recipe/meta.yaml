@@ -10,7 +10,7 @@ source:
   sha256: 7fb40e11c97d2a2c8c576259c6b3e6c981faab1bb1fb36c98c2d1deceb0460dd
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - name: libadbc-driver-manager
@@ -264,16 +264,16 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - {{ stdlib("c") }}
-        - python {{ python_min }}                # [build_platform != target_platform]
+        - python                                 # [build_platform != target_platform]
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
         - cython                                 # [build_platform != target_platform]
       host:
         - cython
         - pip
-        - python {{ python_min }}
+        - python
         - setuptools
       run:
-        - python >={{ python_min }}
+        - python
       run_constrained:
         - pyarrow >=8.0.0
     build:
