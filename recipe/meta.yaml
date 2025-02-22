@@ -254,7 +254,12 @@ outputs:
       imports:
         - adbc_driver_bigquery
       requires:
-        - python {{ python_min }}
+        # This should be just {{ python_min }} but in CI that gives us a
+        # problem since we'll have only built adbc-driver-manager for the
+        # version of Python in the pipeline, not necessarily python_min.
+        # However {{ python_min }} will still be tested since one of the
+        # pipelines will build both on that version of Python.
+        - python >={{ python_min }}
 
   - name: adbc-driver-manager
     script: build-python.sh  # [not win]
@@ -291,7 +296,7 @@ outputs:
         - adbc_driver_manager
         - adbc_driver_manager._lib
       requires:
-        - python {{ python_min }}
+        - python >={{ python_min }}
 
   - name: adbc-driver-flightsql
     build:
@@ -321,7 +326,7 @@ outputs:
       imports:
         - adbc_driver_flightsql
       requires:
-        - python {{ python_min }}
+        - python >={{ python_min }}
 
   - name: adbc-driver-postgresql
     build:
@@ -349,7 +354,7 @@ outputs:
       imports:
         - adbc_driver_postgresql
       requires:
-        - python {{ python_min }}
+        - python >={{ python_min }}
 
   - name: adbc-driver-sqlite
     build:
@@ -377,7 +382,7 @@ outputs:
       imports:
         - adbc_driver_sqlite
       requires:
-        - python {{ python_min }}
+        - python >={{ python_min }}
 
   - name: adbc-driver-snowflake
     build:
@@ -407,7 +412,7 @@ outputs:
       imports:
         - adbc_driver_snowflake
       requires:
-        - python {{ python_min }}
+        - python >={{ python_min }}
 
 about:
   home: https://arrow.apache.org
