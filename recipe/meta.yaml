@@ -10,7 +10,7 @@ source:
   sha256: 59157e7daeb9f066b2bc8dadf7102786d7772364f4dc0ab86ed7084b26201c91
 
 build:
-  number: 1
+  number: 2
 
 outputs:
   - name: libadbc-driver-manager
@@ -229,11 +229,9 @@ outputs:
   - name: adbc-driver-bigquery
     build:
       noarch: python
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
-      skip: true  # [build_platform != target_platform]
-    script: build-python.sh  # [not win]
-    script: build-python.bat  # [win]
+      # noarch requires only a single build
+      skip: true  # [not (target_platfrom == "linux-64")]
+    script: build-python.sh
     requirements:
       build:
         - pip
@@ -301,11 +299,9 @@ outputs:
   - name: adbc-driver-flightsql
     build:
       noarch: python
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
-      skip: true  # [build_platform != target_platform]
-    script: build-python.sh  # [not win]
-    script: build-python.bat  # [win]
+      # noarch requires only a single build
+      skip: true  # [not (target_platfrom == "linux-64")]
+    script: build-python.sh
     requirements:
       build:
         - pip
@@ -331,9 +327,9 @@ outputs:
   - name: adbc-driver-postgresql
     build:
       noarch: python
-      skip: true  # [build_platform != target_platform]
-    script: build-python.sh  # [not win]
-    script: build-python.bat  # [win]
+      # noarch requires only a single build
+      skip: true  # [not (target_platfrom == "linux-64")]
+    script: build-python.sh
     requirements:
       build:
         - pip
@@ -359,9 +355,9 @@ outputs:
   - name: adbc-driver-sqlite
     build:
       noarch: python
-      skip: true  # [build_platform != target_platform]
-    script: build-python.sh  # [not win]
-    script: build-python.bat  # [win]
+      # noarch requires only a single build
+      skip: true  # [not (target_platfrom == "linux-64")]
+    script: build-python.sh
     requirements:
       build:
         - pip
@@ -387,11 +383,9 @@ outputs:
   - name: adbc-driver-snowflake
     build:
       noarch: python
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
-      skip: true  # [build_platform != target_platform]
-    script: build-python.sh  # [not win]
-    script: build-python.bat  # [win]
+      # noarch requires only a single build
+      skip: true  # [not (target_platfrom == "linux-64")]
+    script: build-python.sh
     requirements:
       build:
         - pip
