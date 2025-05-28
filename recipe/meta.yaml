@@ -301,7 +301,8 @@ outputs:
     build:
       noarch: python
       # noarch requires only a single build
-      skip: true  # [not (target_platfrom == "linux-64")]
+      skip: true  # [not linux]
+      skip: true  # [build_platform != target_platform]
     script: build-python.sh
     requirements:
       build:
@@ -329,7 +330,8 @@ outputs:
     build:
       noarch: python
       # noarch requires only a single build
-      skip: true  # [not (target_platfrom == "linux-64")]
+      skip: true  # [not linux]
+      skip: true  # [build_platform != target_platform]
     script: build-python.sh
     requirements:
       build:
@@ -357,7 +359,8 @@ outputs:
     build:
       noarch: python
       # noarch requires only a single build
-      skip: true  # [not (target_platfrom == "linux-64")]
+      skip: true  # [not linux]
+      skip: true  # [build_platform != target_platform]
     script: build-python.sh
     requirements:
       build:
@@ -385,7 +388,8 @@ outputs:
     build:
       noarch: python
       # noarch requires only a single build
-      skip: true  # [not (target_platfrom == "linux-64")]
+      skip: true  # [not linux]
+      skip: true  # [build_platform != target_platform]
     script: build-python.sh
     requirements:
       build:
