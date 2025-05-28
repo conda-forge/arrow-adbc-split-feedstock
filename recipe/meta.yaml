@@ -231,6 +231,7 @@ outputs:
       noarch: python
       # noarch requires only a single build
       skip: true  # [not linux]
+      skip: true  # [build_platform != target_platform]
     script: build-python.sh
     requirements:
       build:
