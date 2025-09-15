@@ -8,6 +8,8 @@ package:
 source:
   url: https://dlcdn.apache.org/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
   sha256: e7f313f54229e79fd19bbeb8558fc7dc1c0ed087ef75e3ad851708219b6da2f0
+  patches:
+    - patches/0001-fix-c-driver_manager-ensure-CONDA_PREFIX-search-buil.patch
 
 build:
   number: 0
