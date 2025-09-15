@@ -61,6 +61,8 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
+        # Go 1.25 requires macOS >= 12
+        - go <1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -96,6 +98,7 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
+        - go <1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -203,6 +206,7 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
+        - go <1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
