@@ -12,7 +12,7 @@ source:
     - patches/0001-fix-c-driver_manager-ensure-CONDA_PREFIX-search-buil.patch
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - name: libadbc-driver-manager
