@@ -8,6 +8,8 @@ package:
 source:
   url: https://dlcdn.apache.org/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
   sha256: 48b19d70a734e789da99e3c53ebad57389c914b85fdc9c509188e5f50896b07c
+  patches:
+    - patches/0001-relax-go-requirement-slightly.patch
 
 build:
   number: 0
@@ -60,7 +62,7 @@ outputs:
         - {{ stdlib("c") }}
         - cmake
         # Go 1.25 requires macOS >= 12
-        - go <1.25
+        - go >=1.24.11,<1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -96,7 +98,7 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
-        - go <1.25
+        - go >=1.24.11,<1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
@@ -204,7 +206,7 @@ outputs:
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
         - cmake
-        - go <1.25
+        - go >=1.24.11,<1.25
         - ninja
     build:
       # XXX: punting on non-unix platforms due to general issues
