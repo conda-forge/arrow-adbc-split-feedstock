@@ -1,5 +1,5 @@
-{% set release = "21" %}
-{% set version = "1.9.0" %}
+{% set release = "22" %}
+{% set version = "1.10.0" %}
 
 package:
   name: arrow-adbc-split
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://dlcdn.apache.org/arrow/apache-arrow-adbc-{{ release }}/apache-arrow-adbc-{{ release }}.tar.gz
-  sha256: ed4496a664d70e71f3d9d852af8a8238799920513a00aafd9700f04e7fcc01ba
+  sha256: 48b19d70a734e789da99e3c53ebad57389c914b85fdc9c509188e5f50896b07c
 
 build:
-  number: 1
+  number: 0
 
 outputs:
   - name: libadbc-driver-manager
@@ -37,8 +37,8 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverManager/                           # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-manager.pc                   # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_manager.a                         # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_manager.so.109                      # [linux]
-        - test -f $PREFIX/lib/libadbc_driver_manager.109.dylib                   # [osx]
+        - test -f $PREFIX/lib/libadbc_driver_manager.so.110                      # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_manager.110.dylib                   # [osx]
 
         - if not exist %LIBRARY_BIN%\adbc_driver_manager.dll exit 1              # [win]
         - if not exist %LIBRARY_INC%\arrow-adbc\adbc.h exit 1                    # [win]
@@ -76,10 +76,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-bigquery.pc                  # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_bigquery.a                        # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_bigquery.so.109                     # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_bigquery.so.110                     # [linux]
         - test -f $PREFIX/lib/libadbc_driver_bigquery.dylib                      # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_bigquery.109.dylib                # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_bigquery.110.dylib                # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_bigquery.dll exit 1             # [win]
@@ -112,10 +112,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-flightsql.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_flightsql.a                       # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_flightsql.so.109                    # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_flightsql.so.110                    # [linux]
         - test -f $PREFIX/lib/libadbc_driver_flightsql.dylib                     # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_flightsql.109.dylib               # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_flightsql.110.dylib               # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_flightsql.dll exit 1            # [win]
@@ -147,10 +147,10 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverPostgreSQL/                        # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-postgresql.pc                # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_postgresql.a                      # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_postgresql.so.109                   # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_postgresql.so.110                   # [linux]
         - test -f $PREFIX/lib/libadbc_driver_postgresql.dylib                    # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_postgresql.109.dylib              # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_postgresql.110.dylib              # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_postgresql.dll exit 1           # [win]
@@ -183,10 +183,10 @@ outputs:
         - test -d $PREFIX/lib/cmake/AdbcDriverSQLite/                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-sqlite.pc                    # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_sqlite.a                          # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_sqlite.so.109                       # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_sqlite.so.110                       # [linux]
         - test -f $PREFIX/lib/libadbc_driver_sqlite.dylib                        # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_sqlite.109.dylib                  # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_sqlite.110.dylib                  # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_sqlite.dll exit 1               # [win]
@@ -220,10 +220,10 @@ outputs:
         - test ! -f $PREFIX/include/arrow-adbc/adbc.h                            # [unix]
         - test -f $PREFIX/lib/pkgconfig/adbc-driver-snowflake.pc                 # [unix]
         - test ! -f $PREFIX/lib/libadbc_driver_snowflake.a                       # [unix]
-        - test -f $PREFIX/lib/libadbc_driver_snowflake.so.109                    # [linux]
+        - test -f $PREFIX/lib/libadbc_driver_snowflake.so.110                    # [linux]
         - test -f $PREFIX/lib/libadbc_driver_snowflake.dylib                     # [osx]
         # TODO: testing exact dylib soname is fragile?
-        # - test -f $PREFIX/lib/libadbc_driver_snowflake.109.dylib               # [osx]
+        # - test -f $PREFIX/lib/libadbc_driver_snowflake.110.dylib               # [osx]
 
         - if exist %LIBRARY_INC%\adbc.h exit 1                                   # [win]
         - if not exist %LIBRARY_BIN%\adbc_driver_snowflake.dll exit 1            # [win]
