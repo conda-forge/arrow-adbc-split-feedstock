@@ -16,7 +16,5 @@ provider:
 test: native_and_emulated
 
 # Go 1.25 requires macOS >= 12
-c_stdlib_version:          # [osx]
-  - "12"                   # [osx]
-MACOSX_SDK_VERSION:        # [osx]
-  - "12"                   # [osx]
+c_stdlib_version:          # [osx and x86_64]
+  - "12"                   # [osx and x86_64]
