@@ -2,6 +2,8 @@ c_compiler:
 - vs2022
 c_stdlib:
 - vs
+cgo_compiler:
+- go-cgo
 channel_sources:
 - conda-forge
 - conda-forge
@@ -17,6 +19,14 @@ libpq:
 - '18'
 libsqlite:
 - '3'
+m2w64_c_compiler:
+- gcc
+m2w64_c_compiler_version:
+- '15'
+m2w64_c_stdlib:
+- m2w64-sysroot
+m2w64_c_stdlib_version:
+- '12'
 pin_run_as_build:
   python:
     min_pin: x.x
