@@ -1,5 +1,10 @@
+REM cgo needs a MinGW gcc, so the m2w64 compiler activation points CC at it. CMake
+REM picks CC up as well, so pin the CMake toolchain back to MSVC -- the DLL and
+REM import library have to follow MSVC naming to match the other drivers.
+REM GoUtils.cmake builds the import library with gendef + dlltool, and dlltool is
+REM only on PATH under its triplet-prefixed name, so point CMake at it directly.
 if "%PKG_NAME%" == "libadbc-driver-flightsql" (
-    set CMAKE_FLAGS=-DADBC_DRIVER_FLIGHTSQL=ON
+    set CMAKE_FLAGS=-DADBC_DRIVER_FLIGHTSQL=ON -DCMAKE_C_COMPILER=cl.exe -DCMAKE_CXX_COMPILER=cl.exe -DDLLTOOL_BIN=%BUILD_PREFIX:\=/%/Library/bin/x86_64-w64-mingw32-dlltool.exe
     goto BUILD
 )
 if "%PKG_NAME%" == "libadbc-driver-manager" (
