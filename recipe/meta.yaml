@@ -10,7 +10,7 @@ source:
   sha256: 2b4b420937f62f7ae56f46dbd6951a5e4ef0da43158080a58cb44cdd09a8b2e0
 
 build:
-  number: 1
+  number: 2
 
 outputs:
   - name: libadbc-driver-manager
@@ -58,12 +58,14 @@ outputs:
         - {{ compiler('cxx') }}
         - {{ compiler('cgo') }}
         - {{ stdlib("c") }}
+        # cgo cannot use MSVC, so bring in a MinGW gcc (which also pulls in the
+        # gendef/dlltool pair that the CMake build uses for the import library)
+        - {{ compiler('m2w64_c') }}  # [win]
+        - {{ stdlib("m2w64_c") }}    # [win]
         - cmake
         - go >=1.26
         - ninja
     build:
-      # XXX: punting on non-unix platforms due to general issues
-      skip: true  # [win]
       run_exports:
         - {{ pin_subpackage("libadbc-driver-flightsql", max_pin="x.x") }}
       ignore_run_exports_from:
