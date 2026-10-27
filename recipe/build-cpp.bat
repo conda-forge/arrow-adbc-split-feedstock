@@ -38,13 +38,9 @@ cmake ..\..\c ^
       -DCMAKE_BUILD_TYPE=Release ^
       -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
       -DCMAKE_PREFIX_PATH=%PREFIX% ^
+      -DADBC_GO_CC=x86_64-w64-mingw32-gcc.exe ^
       %CMAKE_FLAGS% ^
       || exit /B 1
-
-REM cgo cannot use MSVC, and the vs2022 activation clobbers the CC that the m2w64
-REM gcc activation set.  Point it back at MinGW gcc, after CMake has recorded the
-REM MSVC toolchain in its cache.
-if "%PKG_NAME%" == "libadbc-driver-flightsql" set "CC=x86_64-w64-mingw32-gcc.exe"
 
 cmake --build . --target install --config Release -j || exit /B 1
 
